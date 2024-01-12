@@ -1,50 +1,37 @@
 #!/usr/bin/python3
-'''
-fabric script to distribute an archive to web servers
-using the function do_deploy:
-'''
-
+"""
+A module for Fabric script that generates a .tgz archive.
+"""
 import os
 from datetime import datetime
-from fabric.api import env, local, put, run, runs_once
+from fabric.api import local, runs_once
 
 
-env.hosts = ['52.91.119.85', '54.160.85.104']
-
-
-def do_deploy(archive_path):
-    """Distributes an archive to a web server.
-    Args:
-        archive_path (str): The path of the archive to distribute.
-    Returns:
-        If the file doesn't exist at archive_path or an error occurs - False.
-        Otherwise - True.
-    """
+@runs_once
+def do_pack():
+    """Archives the static files"""
     if not os.path.isdir("versions"):
         os.mkdir("versions")
-    cur_time = datetime.now()
-    output = "versions/web_static_{}{}{}{}{}{}.tgz".format(
-        cur_time.year,
-        cur_time.month,
-        cur_time.day,
-        cur_time.hour,
-        cur_time.minute,
-        cur_time.second
+    dt = datetime.now()
+    fab_file = "versions/web_static_{}{}{}{}{}{}.tgz".format(
+        dt.year,
+        dt.month,
+        dt.day,
+        dt.hour,
+        dt.minute,
+        dt.second
     )
     try:
-        print("Packing web_static to {}".format(output))
-        local("tar -cvzf {} web_static".format(output))
-        archize_size = os.stat(output).st_size
-        print("web_static packed: {} -> {} Bytes".format(output, archize_size))
+        print("Packing web_static to {}".format(fab_file))
+        local("tar -cvzf {} web_static".format(fab_file))
+        size = os.stat(fab_file).st_size
+        print("web_static packed: {} -> {} Bytes".format(fab_file, size))
     except Exception:
         output = None
     return output
 
-
 def do_deploy(archive_path):
-    """Deploys the static files to the host servers.
-    Args:
-        archive_path (str): The path to the archived static files.
+    """Deploys the static files to the host servers
     """
     if not os.path.exists(archive_path):
         return False
