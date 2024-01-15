@@ -2,11 +2,23 @@
 """
 A module for Fabric script that generates a .tgz archive.
 """
-from fabric.api import put, run, env
-from os.path import exists
-
-
+from fabric.api import env, local, put, run
+from datetime import datetime
+from os.path import exists, isdir
 env.hosts = ['52.87.216.124', '100.27.5.209']
+
+def do_pack():
+    """generates a tgz archive"""
+    try:
+        date = datetime.now().strftime("%Y%m%d%H%M%S")
+        if isdir("versions") is False:
+            local("mkdir versions")
+        file_name = "versions/web_static_{}.tgz".format(date)
+        local("tar -cvzf {} web_static".format(file_name))
+        return file_name
+    except:
+        return None
+
 
 def do_deploy(archive_path):
     """distributes an archive to the web servers"""
@@ -27,3 +39,11 @@ def do_deploy(archive_path):
         return True
     except:
         return False
+
+
+def deploy():
+    """creates and distributes an archive to the web servers"""
+    archive_path = do_pack()
+    if archive_path is None:
+        return False
+    return do_deploy(archive_path)

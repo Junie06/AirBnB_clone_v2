@@ -5,7 +5,7 @@ Uses a fabric scriptthat deletes out-of-date archives"""
 import os
 from fabric.api import *
 
-env.hosts = ["52.91.119.85", "54.160.85.104"]
+env.hosts = ["52.87.216.124", "100.27.5.209"]
 
 
 def do_clean(number=0):
