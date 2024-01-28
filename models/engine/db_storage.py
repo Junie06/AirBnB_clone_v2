@@ -68,6 +68,11 @@ class DBStorage():
         except Exception:
             pass
 
+    def close(self):
+        """Disposes of current session if active"""
+        self.__session.remove()
+
+
     def reload(self):
         """creates all tables in the database"""
         Base.metadata.create_all(self.__engine)
